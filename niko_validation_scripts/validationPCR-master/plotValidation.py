@@ -151,8 +151,12 @@ run2 = str(config.get('Reference options', 'RunName'))
 
 output, output2 = pickle.load(open('validationResultsPool_%s_%s.obj' %(run1, run2), 'rb') )
 
-koeppenMask = getNCData("/Users/niko/Scripts/Misc/Koeppen-Geiger-Classification-Reclassfied.nc", varName = 'Koeppen_Classification', xSel = output[:,0], ySel = output[:,1])
-demMask = getNCData("/Users/niko/Scripts/PCR-GLOBWB/input30min/routing/elev.nc", varName = 'Band1', xSel = output[:,0], ySel = -output[:,1])
+try:
+  koeppenMask = getNCData("/Users/niko/Scripts/Misc/Koeppen-Geiger-Classification-Reclassfied.nc", varName = 'Koeppen_Classification', xSel = output[:,0], ySel = output[:,1])
+  demMask = getNCData("/Users/niko/Scripts/PCR-GLOBWB/input30min/routing/elev.nc", varName = 'Band1', xSel = output[:,0], ySel = -output[:,1])
+except:
+  pass
+
 
 for step in [1,30]:
 
@@ -205,34 +209,37 @@ for step in [1,30]:
   plotCDF(output[sel,4], output2[sel,4], "AC")
   plotCDF(output[sel,5], output2[sel,5], "KGE")
 
-  selA = koeppenMask <= 4
-  if np.sum(selA) > 0:
-    plotClimateHistogram(selA, "Tropical Climate", output, output2, sel5Min, sel)
-    plotClimateCDF(selA, "Tropical Climate", output, output2, sel5Min, sel)
-
-  selB = [x and y for x, y in zip(koeppenMask >= 5, koeppenMask <= 8)]
-  if np.sum(selB) > 0:
-    plotClimateHistogram(selB, "Desert Climate", output, output2, sel5Min, sel)
-    plotClimateCDF(selB, "Desert Climate", output, output2, sel5Min, sel)
-
-  selC = [x and y for x, y in zip(koeppenMask >= 9, koeppenMask <= 17)]
-  if np.sum(selC) > 0:
-    plotClimateHistogram(selC, "Temperate Climate", output, output2, sel5Min, sel)
-    plotClimateCDF(selC, "Temperate Climate", output, output2, sel5Min, sel)
-
-  selD = [x and y for x, y in zip(koeppenMask >= 18, koeppenMask <= 28)]
-  if np.sum(selD) > 0:
-    plotClimateHistogram(selD, "Continental Climate", output, output2, sel5Min, sel)
-    plotClimateCDF(selD, "Continental Climate", output, output2, sel5Min, sel)
-
-  selLow = demMask <= 1000
-  if np.sum(selLow) > 0:
-    plotClimateHistogram(selLow, "Below 1000m elevation", output, output2, sel5Min, sel)
-    plotClimateCDF(selLow, "Below 1000m elevation", output, output2, sel5Min, sel)
-
-  selHigh = demMask > 1000
-  if np.sum(selHigh) > 0:
-    plotClimateHistogram(selHigh, "Above 1000m elevation", output, output2, sel5Min, sel)
-    plotClimateCDF(selHigh, "Above 1000m elevation", output, output2, sel5Min, sel)
+  try:
+    selA = koeppenMask <= 4
+    if np.sum(selA) > 0:
+      plotClimateHistogram(selA, "Tropical Climate", output, output2, sel5Min, sel)
+      plotClimateCDF(selA, "Tropical Climate", output, output2, sel5Min, sel)
+    
+    selB = [x and y for x, y in zip(koeppenMask >= 5, koeppenMask <= 8)]
+    if np.sum(selB) > 0:
+      plotClimateHistogram(selB, "Desert Climate", output, output2, sel5Min, sel)
+      plotClimateCDF(selB, "Desert Climate", output, output2, sel5Min, sel)
+    
+    selC = [x and y for x, y in zip(koeppenMask >= 9, koeppenMask <= 17)]
+    if np.sum(selC) > 0:
+      plotClimateHistogram(selC, "Temperate Climate", output, output2, sel5Min, sel)
+      plotClimateCDF(selC, "Temperate Climate", output, output2, sel5Min, sel)
+    
+    selD = [x and y for x, y in zip(koeppenMask >= 18, koeppenMask <= 28)]
+    if np.sum(selD) > 0:
+      plotClimateHistogram(selD, "Continental Climate", output, output2, sel5Min, sel)
+      plotClimateCDF(selD, "Continental Climate", output, output2, sel5Min, sel)
+    
+    selLow = demMask <= 1000
+    if np.sum(selLow) > 0:
+      plotClimateHistogram(selLow, "Below 1000m elevation", output, output2, sel5Min, sel)
+      plotClimateCDF(selLow, "Below 1000m elevation", output, output2, sel5Min, sel)
+    
+    selHigh = demMask > 1000
+    if np.sum(selHigh) > 0:
+      plotClimateHistogram(selHigh, "Above 1000m elevation", output, output2, sel5Min, sel)
+      plotClimateCDF(selHigh, "Above 1000m elevation", output, output2, sel5Min, sel)
+  except:
+      pass
 
   pdf.close()
